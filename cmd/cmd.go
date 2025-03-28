@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"kube-scourgify/pkg/controller"
 	"kube-scourgify/utils"
 )
 
@@ -15,7 +16,11 @@ var findCommand = &cobra.Command{
 		resourceGroup, _ := cmd.Flags().GetString(utils.RESOURCE_GROUP_KEY)
 		resourceKind, _ := cmd.Flags().GetString(utils.RESOURCE_KIND_KEY)
 
-		fmt.Print(resourceName, resourceKind, resourceVersion, resourceGroup)
+		err := controller.FindStaleResource(resourceKind, resourceGroup, resourceVersion, resourceName)
+		if err != nil {
+			fmt.Println(err)
+			panic(err)
+		}
 
 	},
 }

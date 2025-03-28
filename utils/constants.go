@@ -1,5 +1,7 @@
 package utils
 
+import "os"
+
 const (
 	RESOURCE_NAME_KEY      = "resourceName"
 	RESOURCE_VERSION_KEY   = "resourceVersion"
@@ -7,4 +9,8 @@ const (
 	RESOURCE_KIND_KEY      = "resourceKind"
 	RESOURCE_NAMESPACE_KEY = "resourceNamespace"
 	SCOUR_VERSION          = "1.0.0"
+)
+
+var (
+	DEFAULT_CONFIG_PATH = os.Getenv("HOME") + "/.kube/config"
 )

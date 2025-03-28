@@ -1,16 +1,24 @@
-package cmd
+package controller
 
-import "github.com/spf13/cobra"
+import (
+	"fmt"
+	"kube-scourgify/utils"
+)
 
-var findCmd = &cobra.Command{
-	Use:   "find",
-	Short: "Find stale resources",
-	Long:  `Find stale resources`,
-}
+func FindStaleResource(kind, group, version, name string) error {
+	kubeClient, err := utils.CreateKubeClient()
+	if err != nil {
+		return err
+	}
 
-var findResourceCmd = &cobra.Command{
-	Use:   "resource",
-	Short: "Find stale resources",
-	Long:  `Find stale resources`,
-	Args:  cobra.MinimumNArgs(1),
+	discoveryClient := kubeClient.Discovery()
+
+	// Check if it's a built-in resource
+	resourceList, err := discoveryClient.ServerResourcesForGroupVersion(version)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("chcel", resourceList.APIResources)
+	return nil
 }
