@@ -3,37 +3,58 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"os"
+	"kube-scourgify/utils"
 )
 
-var RootCmd = &cobra.Command{Use: "app"}
-
-var findStaleCmd = &cobra.Command{
-	Use:   "find [resource-type] [resource-name]",
-	Short: "finds all stale resources",
-	Long:  "finds all stale resources",
-	Args:  cobra.ExactArgs(2),
+var findCommand = &cobra.Command{
+	Use:   "find",
+	Short: "Find stale resource",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("argument 1", args[0], args[1])
-		fmt.Println("find-stale")
+		resourceName, _ := cmd.Flags().GetString(utils.RESOURCE_NAME_KEY)
+		resourceVersion, _ := cmd.Flags().GetString(utils.RESOURCE_VERSION_KEY)
+		resourceGroup, _ := cmd.Flags().GetString(utils.RESOURCE_GROUP_KEY)
+		resourceKind, _ := cmd.Flags().GetString(utils.RESOURCE_KIND_KEY)
+
+		fmt.Print(resourceName, resourceKind, resourceVersion, resourceGroup)
+
 	},
-	DisableFlagsInUseLine: true,
 }
 
-var deleteStaleCmd = &cobra.Command{
-	Use:   "delete-stale",
-	Short: "delete-stale",
-	Long:  `delete-stale`,
+var deleteCommand = &cobra.Command{
+	Use:   "delete",
+	Short: "Delete stale resource",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("delete-stale")
+		resourceName, _ := cmd.Flags().GetString(utils.RESOURCE_NAME_KEY)
+		resourceVersion, _ := cmd.Flags().GetString(utils.RESOURCE_VERSION_KEY)
+		resourceGroup, _ := cmd.Flags().GetString(utils.RESOURCE_GROUP_KEY)
+		resourceKind, _ := cmd.Flags().GetString(utils.RESOURCE_KIND_KEY)
+
+		fmt.Print(resourceName, resourceKind, resourceVersion, resourceGroup)
+	},
+}
+
+var versionCommand = &cobra.Command{
+	Use:   "version",
+	Short: "Print version information",
+	Run: func(cmd *cobra.Command, args []string) {
+
 	},
 }
 
 func Execute() {
-	RootCmd.AddCommand(findStaleCmd, deleteStaleCmd)
-	if err := RootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+	rootCmd := &cobra.Command{Use: "scour"}
+
+	// add required flags
+	rootCmd.PersistentFlags().StringP(utils.RESOURCE_KIND_KEY, "k", "", "Resource Kind")
+	rootCmd.PersistentFlags().StringArrayP("conditions", "c", []string{}, "Conditions")
+	rootCmd.PersistentFlags().StringP(utils.RESOURCE_GROUP_KEY, "g", "", "Resource Group")
+	rootCmd.PersistentFlags().StringP(utils.RESOURCE_VERSION_KEY, "v", "", "Resource Version")
+	rootCmd.PersistentFlags().StringP(utils.RESOURCE_NAME_KEY, "n", "", "Resource Name")
+
+	rootCmd.AddCommand(findCommand)
+
+	if err := rootCmd.Execute(); err != nil {
+		panic(err)
 	}
 
 }
