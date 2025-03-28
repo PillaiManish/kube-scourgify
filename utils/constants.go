@@ -5,4 +5,6 @@ const (
 	RESOURCE_VERSION_KEY = "resourceVersion"
 	RESOURCE_GROUP_KEY   = "resourceGroup"
 	RESOURCE_KIND_KEY    = "resourceKind"
+
+	SCOUR_VERSION = "1.0.0"
 )

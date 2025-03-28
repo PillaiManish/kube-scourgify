@@ -33,16 +33,9 @@ var deleteCommand = &cobra.Command{
 	},
 }
 
-var versionCommand = &cobra.Command{
-	Use:   "version",
-	Short: "Print version information",
-	Run: func(cmd *cobra.Command, args []string) {
-
-	},
-}
-
 func Execute() {
 	rootCmd := &cobra.Command{Use: "scour"}
+	rootCmd.Version = utils.SCOUR_VERSION
 
 	// add required flags
 	rootCmd.PersistentFlags().StringP(utils.RESOURCE_KIND_KEY, "k", "", "Resource Kind")
