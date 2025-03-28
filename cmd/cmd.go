@@ -43,6 +43,7 @@ func Execute() {
 	rootCmd.PersistentFlags().StringP(utils.RESOURCE_GROUP_KEY, "g", "", "Resource Group")
 	rootCmd.PersistentFlags().StringP(utils.RESOURCE_VERSION_KEY, "v", "", "Resource Version")
 	rootCmd.PersistentFlags().StringP(utils.RESOURCE_NAME_KEY, "n", "", "Resource Name")
+	rootCmd.PersistentFlags().StringP(utils.RESOURCE_NAMESPACE_KEY, "s", "", "Resource Namespace")
 
 	rootCmd.AddCommand(findCommand)
 
