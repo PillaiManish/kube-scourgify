@@ -19,6 +19,12 @@ func FindStaleResource(kind, group, version, name string) error {
 		return err
 	}
 
+	for _, resource := range resourceList.APIResources {
+		if resource.Kind == kind {
+			return err
+		}
+	}
+
 	fmt.Println("chcel", resourceList.APIResources)
 	return nil
 }
