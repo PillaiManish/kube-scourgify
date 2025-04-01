@@ -39,11 +39,17 @@ var deleteCommand = &cobra.Command{
 }
 
 func Execute() {
+	var err error
 	rootCmd := &cobra.Command{Use: "scour"}
 	rootCmd.Version = utils.SCOUR_VERSION
 
-	// add required flags
+	// add flags
 	rootCmd.PersistentFlags().StringP(utils.RESOURCE_KIND_KEY, "k", "", "Resource Kind")
+	err = rootCmd.MarkPersistentFlagRequired(utils.RESOURCE_KIND_KEY)
+	if err != nil {
+		panic(err)
+	}
+
 	rootCmd.PersistentFlags().StringArrayP("conditions", "c", []string{}, "Conditions")
 	rootCmd.PersistentFlags().StringP(utils.RESOURCE_GROUP_KEY, "g", "", "Resource Group")
 	rootCmd.PersistentFlags().StringP(utils.RESOURCE_VERSION_KEY, "v", "", "Resource Version")
@@ -52,7 +58,7 @@ func Execute() {
 
 	rootCmd.AddCommand(findCommand)
 
-	if err := rootCmd.Execute(); err != nil {
+	if err = rootCmd.Execute(); err != nil {
 		panic(err)
 	}
 
