@@ -14,7 +14,7 @@ import (
 	"kube-scourgify/utils"
 )
 
-func FindStaleResource(kind, group, version, name string) error {
+func FindStaleResource(kind, group, version, filepath string) error {
 	kubeClient, err := utils.CreateKubeClient()
 	if err != nil {
 		return err
@@ -55,21 +55,23 @@ func FindStaleResource(kind, group, version, name string) error {
 		return err
 	}
 
-	return findStaleResource(resources, kind)
+	conditions, err := utils.ParseConditions(filepath)
+
+	return findStaleResource(resources, kind, conditions)
 }
 
-func findStaleResource(resources *unstructured.UnstructuredList, kind string) error {
+func findStaleResource(resources *unstructured.UnstructuredList, kind string, conditions utils.Conditions) error {
 	switch kind {
 	case "secrets":
-		return secrets.FindStaleSecrets()
+		return secrets.FindStaleSecrets(conditions)
 	case "certificates":
-		return certificates.FindStaleCertificates()
+		return certificates.FindStaleCertificates(conditions)
 	case "certificaterequests":
-		return certificateRequests.FindStaleCertificateRequests()
+		return certificateRequests.FindStaleCertificateRequests(conditions)
 	case "orders":
-		return orders.FindStaleOrders()
+		return orders.FindStaleOrders(conditions)
 	case "challenges":
-		return challenges.FindStaleChallenges()
+		return challenges.FindStaleChallenges(conditions)
 	default:
 		return fmt.Errorf("to be implemented")
 	}

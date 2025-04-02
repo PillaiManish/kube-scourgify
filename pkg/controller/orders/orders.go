@@ -1,5 +1,7 @@
 package orders
 
-func FindStaleOrders() error {
+import "kube-scourgify/utils"
+
+func FindStaleOrders(conditions utils.Conditions) error {
 	return nil
 }
