@@ -3,9 +3,8 @@ package controller
 import (
 	"context"
 	"fmt"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/client-go/dynamic"
+	"k8s.io/client-go/kubernetes"
 	"kube-scourgify/pkg/controller/certificateRequests"
 	"kube-scourgify/pkg/controller/certificates"
 	"kube-scourgify/pkg/controller/challenges"
@@ -15,6 +14,8 @@ import (
 )
 
 func FindStaleResource(kind, group, version, filepath string) error {
+	ctx := context.Background()
+
 	kubeClient, err := utils.CreateKubeClient()
 	if err != nil {
 		return err
@@ -25,9 +26,11 @@ func FindStaleResource(kind, group, version, filepath string) error {
 		return err
 	}
 
-	ctx := context.TODO()
-
 	discoveryClient := kubeClient.Discovery()
+
+	if kind == "" {
+		return fmt.Errorf("kind is required")
+	}
 
 	if group == "" || version == "" {
 		resourceList, err := discoveryClient.ServerResourcesForGroupVersion(version)
@@ -44,34 +47,23 @@ func FindStaleResource(kind, group, version, filepath string) error {
 		}
 	}
 
-	gvr := schema.GroupVersionResource{
-		Group:    group,
-		Version:  version,
-		Resource: "configmaps",
-	}
-
-	resources, err := dynamicClient.Resource(gvr).Namespace("").List(ctx, v1.ListOptions{})
-	if err != nil {
-		return err
-	}
-
 	conditions, err := utils.ParseConditions(filepath)
 
-	return findStaleResource(resources, kind, conditions)
+	return findStaleResource(ctx, kubeClient, dynamicClient, kind, conditions)
 }
 
-func findStaleResource(resources *unstructured.UnstructuredList, kind string, conditions utils.Conditions) error {
+func findStaleResource(ctx context.Context, kubeClient *kubernetes.Clientset, dynamicClient *dynamic.DynamicClient, kind string, conditions utils.Conditions) error {
 	switch kind {
 	case "secrets":
-		return secrets.FindStaleSecrets(conditions)
-	case "certificates":
-		return certificates.FindStaleCertificates(conditions)
-	case "certificaterequests":
-		return certificateRequests.FindStaleCertificateRequests(conditions)
-	case "orders":
-		return orders.FindStaleOrders(conditions)
-	case "challenges":
-		return challenges.FindStaleChallenges(conditions)
+		return secrets.FindStaleSecrets(ctx, kubeClient, dynamicClient, conditions)
+	case utils.CERTIFICATES:
+		return certificates.FindStaleCertificates(ctx, dynamicClient, conditions)
+	case utils.CERTIFICATEREQUESTS:
+		return certificateRequests.FindStaleCertificateRequests(ctx, dynamicClient, conditions)
+	case utils.ORDERS:
+		return orders.FindStaleOrders(ctx, dynamicClient, conditions)
+	case utils.CHALLENGES:
+		return challenges.FindStaleChallenges(ctx, dynamicClient, conditions)
 	default:
 		return fmt.Errorf("to be implemented")
 	}

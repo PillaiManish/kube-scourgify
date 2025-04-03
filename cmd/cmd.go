@@ -17,10 +17,8 @@ var findCommand = &cobra.Command{
 		resourceKind, _ := cmd.Flags().GetString(utils.RESOURCE_KIND_KEY)
 		conditionsFilepath, _ := cmd.Flags().GetString(utils.CONDITIONS_FILEPATH)
 
-		fmt.Println(resourceVersion, resourceGroup, resourceKind, conditionsFilepath)
 		err := controller.FindStaleResource(resourceKind, resourceGroup, resourceVersion, conditionsFilepath)
 		if err != nil {
-			fmt.Println(err)
 			panic(err)
 		}
 
@@ -42,21 +40,19 @@ var deleteCommand = &cobra.Command{
 
 func Execute() {
 	var err error
-	rootCmd := &cobra.Command{Use: "scour"}
+	rootCmd := &cobra.Command{Use: "scour", CompletionOptions: cobra.CompletionOptions{DisableDefaultCmd: true}}
 	rootCmd.Version = utils.SCOUR_VERSION
-
-	// add flags
-	/*rootCmd.PersistentFlags().StringP(utils.RESOURCE_KIND_KEY, "k", "", "Resource Kind")
-	err = rootCmd.MarkPersistentFlagRequired(utils.RESOURCE_KIND_KEY)
-	if err != nil {
-		panic(err)
-	}*/
-
+	
 	findCommand.PersistentFlags().StringP(utils.CONDITIONS_FILEPATH, "c", "", "absolute filepath to conditions.json")
 	findCommand.PersistentFlags().StringP(utils.RESOURCE_GROUP_KEY, "g", "", "Resource Group")
 	findCommand.PersistentFlags().StringP(utils.RESOURCE_VERSION_KEY, "v", "", "Resource Version")
 	findCommand.PersistentFlags().StringP(utils.RESOURCE_KIND_KEY, "n", "", "Resource Kind")
 	findCommand.PersistentFlags().StringP(utils.RESOURCE_NAMESPACE_KEY, "s", "", "Resource Namespace")
+
+	err = findCommand.MarkPersistentFlagRequired(utils.CONDITIONS_FILEPATH)
+	if err != nil {
+		panic(err)
+	}
 
 	rootCmd.AddCommand(findCommand, deleteCommand)
 

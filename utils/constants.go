@@ -17,6 +17,9 @@ const (
 	CLUSTER_ISSUER         = "clusterissuer"
 	CLUSTER_ISSUERS        = "clusterissuers"
 	RESOURCE_CR_NAME       = "resourceCRName"
+	CHALLENGES             = "challenges"
+	ORDERS                 = "orders"
+	CERTIFICATEREQUESTS    = "certificaterequests"
 )
 
 var (

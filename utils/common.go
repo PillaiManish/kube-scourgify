@@ -30,7 +30,7 @@ func isEmpty(s string) bool {
 	return len(strings.TrimSpace(s)) == 0
 }
 
-func isNotEmpty(s string) bool {
+func IsNotEmpty(s string) bool {
 	return !isEmpty(s)
 }
 
@@ -41,8 +41,10 @@ func ParseConditions(filePath string) (Conditions, error) {
 	}
 
 	var conditions Conditions
-	json.Unmarshal(byteValues, &conditions)
-	fmt.Println(conditions.Deps)
+	err = json.Unmarshal(byteValues, &conditions)
+	if err != nil {
+		return Conditions{}, err
+	}
 	return conditions, nil
 }
 
