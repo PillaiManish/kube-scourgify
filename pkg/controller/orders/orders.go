@@ -51,7 +51,7 @@ func FindStaleOrders(ctx context.Context, dynamicClient *dynamic.DynamicClient, 
 
 	if deleteFlag {
 		for _, order := range staleOrders {
-			err = dynamicClient.Resource(gvr).Delete(ctx, order.Name, v1.DeleteOptions{})
+			err = dynamicClient.Resource(gvr).Namespace(order.Namespace).Delete(ctx, order.Name, v1.DeleteOptions{})
 			if err != nil {
 				return err
 			}

@@ -50,7 +50,7 @@ func FindStaleCertificates(ctx context.Context, dynamicClient *dynamic.DynamicCl
 
 	if deleteFlag {
 		for _, staleCertificate := range staleCertificates {
-			err = dynamicClient.Resource(gvr).Delete(context.Background(), staleCertificate.Name, v1.DeleteOptions{})
+			err = dynamicClient.Resource(gvr).Namespace(staleCertificate.Namespace).Delete(context.Background(), staleCertificate.Name, v1.DeleteOptions{})
 			if err != nil {
 				return err
 			}

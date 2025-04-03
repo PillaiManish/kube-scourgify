@@ -42,7 +42,7 @@ func FindStaleChallenges(ctx context.Context, dynamicClient *dynamic.DynamicClie
 
 	if deleteFlag {
 		for _, challenge := range staleChallenges {
-			err = dynamicClient.Resource(gvr).Delete(ctx, challenge.Name, v1.DeleteOptions{})
+			err = dynamicClient.Resource(gvr).Namespace(challenge.Namespace).Delete(ctx, challenge.Name, v1.DeleteOptions{})
 			if err != nil {
 				return err
 			}
