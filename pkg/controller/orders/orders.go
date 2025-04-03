@@ -10,7 +10,7 @@ import (
 	"kube-scourgify/utils"
 )
 
-func FindStaleOrders(ctx context.Context, dynamicClient *dynamic.DynamicClient, conditions utils.Conditions) error {
+func FindStaleOrders(ctx context.Context, dynamicClient *dynamic.DynamicClient, conditions utils.Conditions, deleteFlag bool) error {
 	var staleOrders []*acmev1.Order
 	gvr := certmanagerv1.SchemeGroupVersion.WithResource(utils.ORDERS)
 
@@ -46,6 +46,15 @@ func FindStaleOrders(ctx context.Context, dynamicClient *dynamic.DynamicClient, 
 
 		if !isIssuerRefPresent || !isCertificatePresent {
 			staleOrders = append(staleOrders, order)
+		}
+	}
+
+	if deleteFlag {
+		for _, order := range staleOrders {
+			err = dynamicClient.Resource(gvr).Delete(ctx, order.Name, v1.DeleteOptions{})
+			if err != nil {
+				return err
+			}
 		}
 	}
 

@@ -8,6 +8,7 @@ const (
 	RESOURCE_GROUP_KEY     = "resourceGroup"
 	RESOURCE_KIND_KEY      = "resourceKind"
 	RESOURCE_NAMESPACE_KEY = "resourceNamespace"
+	DELETE_FLAG_KEY        = "delete"
 	CONDITIONS_FILEPATH    = "conditions"
 	SCOUR_VERSION          = "1.0.0"
 	CERTIFICATE            = "certificate"

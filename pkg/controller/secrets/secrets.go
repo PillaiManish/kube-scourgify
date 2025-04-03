@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-func FindStaleSecrets(ctx context.Context, kubeClient *kubernetes.Clientset, dynamicClient *dynamic.DynamicClient, conditions utils.Conditions) error {
+func FindStaleSecrets(ctx context.Context, kubeClient *kubernetes.Clientset, dynamicClient *dynamic.DynamicClient, conditions utils.Conditions, deleteFlagKey bool) error {
 	secretsList, err := kubeClient.CoreV1().Secrets("").List(ctx, v1.ListOptions{
 		FieldSelector: "type=kubernetes.io/tls",
 	})
@@ -53,6 +53,17 @@ func FindStaleSecrets(ctx context.Context, kubeClient *kubernetes.Clientset, dyn
 	}
 
 	printStaleSecrets(staleSecrets)
+
+	if deleteFlagKey {
+		for _, secret := range staleSecrets {
+			err = kubeClient.CoreV1().Secrets(secret.Namespace).Delete(ctx, secret.Name, v1.DeleteOptions{})
+			if err != nil {
+				return err
+			}
+
+		}
+	}
+
 	return nil
 
 }

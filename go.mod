@@ -1,10 +1,12 @@
 module kube-scourgify
 
 go 1.23.5
+
 toolchain go1.24.1
 
 require (
 	github.com/cert-manager/cert-manager v1.17.1
+	github.com/openshift/api v0.0.0-20250402150121-50cb52d04f83
 	github.com/spf13/cobra v1.9.1
 	k8s.io/api v0.32.3
 	k8s.io/apimachinery v0.32.3

@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-func FindStaleCertificates(ctx context.Context, dynamicClient *dynamic.DynamicClient, conditions utils.Conditions) error {
+func FindStaleCertificates(ctx context.Context, dynamicClient *dynamic.DynamicClient, conditions utils.Conditions, deleteFlag bool) error {
 	var staleCertificates []*certmanagerv1.Certificate
 
 	// gvr for certificates
@@ -47,6 +47,15 @@ func FindStaleCertificates(ctx context.Context, dynamicClient *dynamic.DynamicCl
 	}
 
 	printStaleCertificates(staleCertificates)
+
+	if deleteFlag {
+		for _, staleCertificate := range staleCertificates {
+			err = dynamicClient.Resource(gvr).Delete(context.Background(), staleCertificate.Name, v1.DeleteOptions{})
+			if err != nil {
+				return err
+			}
+		}
+	}
 
 	return nil
 }

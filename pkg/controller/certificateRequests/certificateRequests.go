@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func FindStaleCertificateRequests(ctx context.Context, dynamicClient *dynamic.DynamicClient, conditions utils.Conditions) error {
+func FindStaleCertificateRequests(ctx context.Context, dynamicClient *dynamic.DynamicClient, conditions utils.Conditions, deleteFlag bool) error {
 	var isCertificateDepFlagEnabled, isIssuerDepFlagEnabled bool
 
 	for _, i := range conditions.Deps {
@@ -74,5 +74,14 @@ func FindStaleCertificateRequests(ctx context.Context, dynamicClient *dynamic.Dy
 	}
 
 	fmt.Println(staleCertificateRequests)
+
+	if deleteFlag {
+		for _, certRequest := range staleCertificateRequests {
+			err = dynamicClient.Resource(gvr).Delete(ctx, certRequest.Name, v1.DeleteOptions{})
+			if err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }

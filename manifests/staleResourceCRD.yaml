@@ -1,0 +1,32 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: staleresources.kube-scourgify.com
+spec:
+  group: kube-scourgify.com
+  scope: Cluster
+  names:
+    plural: staleresources
+    singular: staleresources
+    kind: StaleResources
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                group:
+                  type: string
+                version:
+                  type: string
+                kind:
+                  type: string
+                staleResourcesList:
+                  type: array
+                  items:
+                    type: string

@@ -11,7 +11,7 @@ import (
 	"kube-scourgify/utils"
 )
 
-func FindStaleChallenges(ctx context.Context, dynamicClient *dynamic.DynamicClient, conditions utils.Conditions) error {
+func FindStaleChallenges(ctx context.Context, dynamicClient *dynamic.DynamicClient, conditions utils.Conditions, deleteFlag bool) error {
 	var staleChallenges []*acmev1.Challenge
 
 	gvr := certmanagerv1.SchemeGroupVersion.WithResource(utils.CHALLENGES)
@@ -38,6 +38,15 @@ func FindStaleChallenges(ctx context.Context, dynamicClient *dynamic.DynamicClie
 			}
 		}
 
+	}
+
+	if deleteFlag {
+		for _, challenge := range staleChallenges {
+			err = dynamicClient.Resource(gvr).Delete(ctx, challenge.Name, v1.DeleteOptions{})
+			if err != nil {
+				return err
+			}
+		}
 	}
 
 	return nil

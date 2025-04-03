@@ -13,7 +13,7 @@ import (
 	"kube-scourgify/utils"
 )
 
-func FindStaleResource(kind, group, version, filepath string) error {
+func FindStaleResource(kind, group, version, filepath string, deleteFlagKey bool) error {
 	ctx := context.Background()
 
 	kubeClient, err := utils.CreateKubeClient()
@@ -49,21 +49,21 @@ func FindStaleResource(kind, group, version, filepath string) error {
 
 	conditions, err := utils.ParseConditions(filepath)
 
-	return findStaleResource(ctx, kubeClient, dynamicClient, kind, conditions)
+	return findStaleResource(ctx, kubeClient, dynamicClient, kind, conditions, deleteFlagKey)
 }
 
-func findStaleResource(ctx context.Context, kubeClient *kubernetes.Clientset, dynamicClient *dynamic.DynamicClient, kind string, conditions utils.Conditions) error {
+func findStaleResource(ctx context.Context, kubeClient *kubernetes.Clientset, dynamicClient *dynamic.DynamicClient, kind string, conditions utils.Conditions, deleteFlagKey bool) error {
 	switch kind {
 	case "secrets":
-		return secrets.FindStaleSecrets(ctx, kubeClient, dynamicClient, conditions)
+		return secrets.FindStaleSecrets(ctx, kubeClient, dynamicClient, conditions, deleteFlagKey)
 	case utils.CERTIFICATES:
-		return certificates.FindStaleCertificates(ctx, dynamicClient, conditions)
+		return certificates.FindStaleCertificates(ctx, dynamicClient, conditions, deleteFlagKey)
 	case utils.CERTIFICATEREQUESTS:
-		return certificateRequests.FindStaleCertificateRequests(ctx, dynamicClient, conditions)
+		return certificateRequests.FindStaleCertificateRequests(ctx, dynamicClient, conditions, deleteFlagKey)
 	case utils.ORDERS:
-		return orders.FindStaleOrders(ctx, dynamicClient, conditions)
+		return orders.FindStaleOrders(ctx, dynamicClient, conditions, deleteFlagKey)
 	case utils.CHALLENGES:
-		return challenges.FindStaleChallenges(ctx, dynamicClient, conditions)
+		return challenges.FindStaleChallenges(ctx, dynamicClient, conditions, deleteFlagKey)
 	default:
 		return fmt.Errorf("to be implemented")
 	}
